@@ -31,6 +31,22 @@ public class UserManager {
         return null;
     }
 
+    /**
+     * Registers a user from non-CLI contexts (e.g. Swing). Persists via {@link com.expense.split.service.UserService}.
+     */
+    public synchronized User registerUser(String name, String email, String password) {
+        if (name == null || name.isBlank() || email == null || email.isBlank() || password == null) {
+            return null;
+        }
+        String trimmedEmail = email.trim();
+        if (listAllUsers().stream().anyMatch(u ->
+                u.getEmail() != null && u.getEmail().equalsIgnoreCase(trimmedEmail))) {
+            return null;
+        }
+        User user = userService.createUser(name.trim(), trimmedEmail, password);
+        return userService.saveUser(user) ? user : null;
+    }
+
     public synchronized boolean updateName(User user, String name) {
         return userService.updateUserName(user, name);
     }

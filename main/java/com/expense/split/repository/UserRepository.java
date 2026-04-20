@@ -9,6 +9,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class UserRepository {
     private static final List<User> userList = new CopyOnWriteArrayList<>();
 
+    public UserRepository() {
+        userList.add(new User("saksham", "saksham@gmail.com", "pass1234"));
+        userList.add(new User("kirti", "k@gmail.com", "k1234"));
+        userList.add(new User("rupesh", "r@gmail.com", "r1234"));
+        userList.add(new User("amruta", "a@gmail.com", "a1234"));
+    }
+
     // Getter
     public static List<User> getUsers() { return Collections.unmodifiableList(userList); }
 
@@ -64,9 +71,18 @@ public class UserRepository {
     }
 
     public User getUserByEmail(String email) {
-        for(User current : userList)
-            if(email != null && current.getEmail().equals(email))
+        if (email == null) {
+            return null;
+        }
+        String needle = email.trim();
+        if (needle.isEmpty()) {
+            return null;
+        }
+        for (User current : userList) {
+            if (current.getEmail() != null && current.getEmail().equalsIgnoreCase(needle)) {
                 return current;
+            }
+        }
         return null;
     }
 

@@ -58,8 +58,11 @@ public class ExpenseSplitterGUI extends JFrame {
     }
 
     private void initLoginScreen() {
-        JPanel loginPanel = new JPanel(new GridBagLayout());
+        JPanel loginPanel = new JPanel(new BorderLayout());
         loginPanel.setBackground(BG_COLOR);
+
+        JPanel loginForm = new JPanel(new GridBagLayout());
+        loginForm.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -68,27 +71,44 @@ public class ExpenseSplitterGUI extends JFrame {
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
         title.setForeground(PRIMARY_COLOR);
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        loginPanel.add(title, gbc);
+        loginForm.add(title, gbc);
 
         gbc.gridwidth = 1;
-        gbc.gridy = 1; loginPanel.add(new JLabel("Email:"), gbc);
+        gbc.gridy = 1; loginForm.add(new JLabel("Email:"), gbc);
         JTextField emailField = new JTextField(20);
-        gbc.gridx = 1; loginPanel.add(emailField, gbc);
+        gbc.gridx = 1; loginForm.add(emailField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2; loginPanel.add(new JLabel("Password:"), gbc);
+        gbc.gridx = 0; gbc.gridy = 2; loginForm.add(new JLabel("Password:"), gbc);
         JPasswordField passField = new JPasswordField(20);
-        gbc.gridx = 1; loginPanel.add(passField, gbc);
+        gbc.gridx = 1; loginForm.add(passField, gbc);
 
         JButton loginBtn = createStyledButton("Login", PRIMARY_COLOR);
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
-        loginPanel.add(loginBtn, gbc);
+        loginForm.add(loginBtn, gbc);
 
         JButton signupBtn = createStyledButton("Register New Account", ACCENT_COLOR);
         gbc.gridy = 4;
-        loginPanel.add(signupBtn, gbc);
+        loginForm.add(signupBtn, gbc);
+
+        JPanel loginFooter = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        loginFooter.setOpaque(false);
+        JButton loginBackBtn = createStyledButton("Back", Color.GRAY);
+        loginFooter.add(loginBackBtn);
+        loginBackBtn.addActionListener(e -> {
+            int choice = JOptionPane.showConfirmDialog(this,
+                    "Exit Expense Splitter?",
+                    "Confirm",
+                    JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                dispose();
+            }
+        });
+
+        loginPanel.add(loginForm, BorderLayout.CENTER);
+        loginPanel.add(loginFooter, BorderLayout.SOUTH);
 
         loginBtn.addActionListener(e -> {
-            String email = emailField.getText();
+            String email = emailField.getText().trim();
             String pass = new String(passField.getPassword());
             User user = userManager.findByEmail(email);
             if (user != null && user.getPassword().equals(pass)) {
@@ -104,15 +124,16 @@ public class ExpenseSplitterGUI extends JFrame {
             String name = JOptionPane.showInputDialog(this, "Enter Name:");
             String email = JOptionPane.showInputDialog(this, "Enter Email:");
             String pass = JOptionPane.showInputDialog(this, "Enter Password:");
-            if (name != null && email != null && pass != null) {
-                User user = new User(name, email, pass);
-                if (userManager.listAllUsers().stream().anyMatch(u -> u.getEmail().equals(email))) {
-                   JOptionPane.showMessageDialog(this, "Email already exists");
-                } else {
-                    // Manual save because UserManager.registerUser uses Input.class CLI
-                    // We'll trust the model here
-                    com.expense.split.repository.UserRepository.getUsers().add(user);
+            if (name != null && email != null && pass != null
+                    && !name.isBlank() && !email.isBlank() && !pass.isEmpty()) {
+                User registered = userManager.registerUser(name, email, pass);
+                if (registered != null) {
                     JOptionPane.showMessageDialog(this, "Registered! Now login.");
+                } else if (userManager.listAllUsers().stream()
+                        .anyMatch(u -> u.getEmail() != null && u.getEmail().equalsIgnoreCase(email.trim()))) {
+                    JOptionPane.showMessageDialog(this, "Email already exists");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Registration failed. Please try again.");
                 }
             }
         });
@@ -133,10 +154,22 @@ public class ExpenseSplitterGUI extends JFrame {
         welcomeLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         header.add(welcomeLabel, BorderLayout.WEST);
 
+        JPanel dashboardHeaderEast = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        dashboardHeaderEast.setOpaque(false);
+        JButton dashboardBackBtn = createStyledButton("Back", Color.WHITE);
+        dashboardBackBtn.setForeground(PRIMARY_COLOR);
         JButton createGroupBtn = createStyledButton("+ Create Group", Color.WHITE);
         createGroupBtn.setForeground(PRIMARY_COLOR);
-        header.add(createGroupBtn, BorderLayout.EAST);
+        dashboardHeaderEast.add(dashboardBackBtn);
+        dashboardHeaderEast.add(createGroupBtn);
+        header.add(dashboardHeaderEast, BorderLayout.EAST);
         dashboardPanel.add(header, BorderLayout.NORTH);
+
+        dashboardBackBtn.addActionListener(e -> {
+            currentUser = null;
+            currentGroup = null;
+            cardLayout.show(mainPanel, "Login");
+        });
 
         dashboardContent = new JPanel();
         dashboardContent.setLayout(new BoxLayout(dashboardContent, BoxLayout.Y_AXIS));
@@ -220,11 +253,10 @@ public class ExpenseSplitterGUI extends JFrame {
         backBtn.addActionListener(e -> cardLayout.show(mainPanel, "Dashboard"));
 
         addMemberBtn.addActionListener(e -> {
-            String idStr = JOptionPane.showInputDialog(this, "Enter User ID to add:");
-            if (idStr != null) {
+            String email_idStr = JOptionPane.showInputDialog(this, "Enter User email ID to add:");
+            if (email_idStr != null) {
                 try {
-                    long id = Long.parseLong(idStr);
-                    User u = userManager.findById(id);
+                    User u = userManager.findByEmail(email_idStr);
                     if (u != null) {
                         groupManager.addMember(currentGroup.getId(), u);
                         JOptionPane.showMessageDialog(this, "Added " + u.getName());
@@ -281,6 +313,12 @@ public class ExpenseSplitterGUI extends JFrame {
         JButton saveBtn = createStyledButton("Save Expense", ACCENT_COLOR);
         gbc.gridy = 4;
         dialog.add(saveBtn, gbc);
+
+        JButton cancelExpenseBtn = createStyledButton("Back", Color.GRAY);
+        gbc.gridy = 5;
+        dialog.add(cancelExpenseBtn, gbc);
+
+        cancelExpenseBtn.addActionListener(e -> dialog.dispose());
 
         saveBtn.addActionListener(e -> {
             try {
