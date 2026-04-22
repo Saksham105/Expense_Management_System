@@ -21,18 +21,18 @@ public class DashboardService {
             User payer = expense.getPaidTo();
             
             if (payer.equals(user)) {
-                // User paid, others owe them
+                // User paid, others owe them (only count UNPAID splits)
                 for (SplitDetail detail : expense.getPaidBy()) {
-                    if (!detail.getUser().equals(user)) {
+                    if (!detail.getUser().equals(user) && !detail.getStatus()) {
                         balance.totalOwedTo += detail.getAmount();
                         User other = detail.getUser();
                         balance.perPersonBalance.put(other, balance.perPersonBalance.getOrDefault(other, 0.0) + detail.getAmount());
                     }
                 }
             } else {
-                // Someone else paid, check if user is a participant
+                // Someone else paid, check if user is a participant (only count UNPAID splits)
                 for (SplitDetail detail : expense.getPaidBy()) {
-                    if (detail.getUser().equals(user)) {
+                    if (detail.getUser().equals(user) && !detail.getStatus()) {
                         balance.totalOwe += detail.getAmount();
                         balance.perPersonBalance.put(payer, balance.perPersonBalance.getOrDefault(payer, 0.0) - detail.getAmount());
                     }

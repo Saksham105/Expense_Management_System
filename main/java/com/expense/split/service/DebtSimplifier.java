@@ -42,6 +42,7 @@ public class DebtSimplifier {
             balances.put(payer, balances.getOrDefault(payer, 0.0) + total);
 
             for (SplitDetail detail : expense.getPaidBy()) {
+                if (detail.getStatus()) continue; // skip already-settled splits
                 User participant = detail.getUser();
                 double share = detail.getAmount();
                 balances.put(participant, balances.getOrDefault(participant, 0.0) - share);
