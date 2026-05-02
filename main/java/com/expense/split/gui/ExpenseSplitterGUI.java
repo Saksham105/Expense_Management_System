@@ -107,7 +107,7 @@ public class ExpenseSplitterGUI extends JFrame {
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(BG_DARK);
 
-        // ── Left branded sidebar ───────────────────────────────────────────
+        // ------------------------------------------------------------ Left branded sidebar ------------------------------------------------------------
         JPanel sidebar = new JPanel();
         sidebar.setBackground(BG_CARD);
         sidebar.setPreferredSize(new Dimension(330, 0));
@@ -138,7 +138,7 @@ public class ExpenseSplitterGUI extends JFrame {
         sidebar.add(tagline);
         sidebar.add(Box.createVerticalGlue());
 
-        // ── Right form card ────────────────────────────────────────────────
+        // ------------------------------------------------------------ Right form card ------------------------------------------------------------
         JPanel formWrapper = new JPanel(new BorderLayout());
         formWrapper.setBackground(BG_DARK);
         formWrapper.setBorder(new EmptyBorder(60, 80, 60, 80)); // padding around the card
@@ -162,7 +162,7 @@ public class ExpenseSplitterGUI extends JFrame {
         tabBar.add(loginTab);
         tabBar.add(regTab);
 
-        // ── Login form ─────────────────────────────────────────────────────
+        // ------------------------------------------------------------Login form ------------------------------------------------------------
         JPanel loginForm = cardForm(BG_CARD);
 
         JTextField    loginEmail = mkField(false);
@@ -178,7 +178,7 @@ public class ExpenseSplitterGUI extends JFrame {
         loginForm.add(Box.createRigidArea(new Dimension(0, 18)));
         loginForm.add(loginBtn);
 
-        // ── Register form ──────────────────────────────────────────────────
+        // ------------------------------------------------------------ Register form ------------------------------------------------------------
         JPanel regForm = cardForm(BG_CARD);
         regForm.setVisible(false);
 
@@ -222,7 +222,7 @@ public class ExpenseSplitterGUI extends JFrame {
         root.add(sidebar,      BorderLayout.WEST);
         root.add(formWrapper,  BorderLayout.CENTER);
 
-        // ── Tab toggle logic ───────────────────────────────────────────────
+        // ------------------------------------------------------------Tab toggle logic ------------------------------------------------------------
         loginTab.addActionListener(e -> {
             styleTab(loginTab, true); styleTab(regTab, false);
             loginForm.setVisible(true); regForm.setVisible(false);
@@ -234,7 +234,7 @@ public class ExpenseSplitterGUI extends JFrame {
             regErr.setText(" ");
         });
 
-        // ── Login action ───────────────────────────────────────────────────
+        // ------------------------------------------------------------Login action ------------------------------------------------------------
         loginBtn.addActionListener(e -> {
             String email = loginEmail.getText().trim();
             String pass  = new String(loginPass.getPassword());
@@ -254,7 +254,7 @@ public class ExpenseSplitterGUI extends JFrame {
         });
         loginPass.addActionListener(e -> loginBtn.doClick());
 
-        // ── Register action ────────────────────────────────────────────────
+        // ------------------------------------------------------------Register action ------------------------------------------------------------
         regBtn.addActionListener(e -> {
             String name  = regName.getText().trim();
             String email = regEmail.getText().trim();
@@ -298,7 +298,7 @@ public class ExpenseSplitterGUI extends JFrame {
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(BG_DARK);
 
-        // ── Left sidebar ───────────────────────────────────────────────────
+        // ------------------------------------------------------------Left sidebar ------------------------------------------------------------
         JPanel sidebar = new JPanel();
         sidebar.setBackground(BG_CARD);
         sidebar.setPreferredSize(new Dimension(230, 0));
@@ -332,7 +332,7 @@ public class ExpenseSplitterGUI extends JFrame {
         sidebar.add(Box.createVerticalGlue());
         sidebar.add(logoutBtn);
 
-        // ── Center: header + scrollable grid ──────────────────────────────
+        // -------------------------------------------------------Center: header + scrollable grid ------------------------------------------------------------
         dashboardGroupGrid = new JPanel();
         dashboardGroupGrid.setBackground(BG_DARK);
         dashboardGroupGrid.setLayout(new BoxLayout(dashboardGroupGrid, BoxLayout.Y_AXIS));
@@ -359,7 +359,7 @@ public class ExpenseSplitterGUI extends JFrame {
         centerWrapper.add(topBar,       BorderLayout.NORTH);
         centerWrapper.add(centerScroll, BorderLayout.CENTER);
 
-        // ── Right summary panel ────────────────────────────────────────────
+        // ------------------------------------------------------------Right summary panel ------------------------------------------------------------
         dashboardSummaryPanel = new JPanel();
         dashboardSummaryPanel.setBackground(BG_CARD);
         dashboardSummaryPanel.setPreferredSize(new Dimension(220, 0));
@@ -370,7 +370,7 @@ public class ExpenseSplitterGUI extends JFrame {
         root.add(centerWrapper,       BorderLayout.CENTER);
         root.add(dashboardSummaryPanel, BorderLayout.EAST);
 
-        // ── Actions ────────────────────────────────────────────────────────
+        // ------------------------------------------------------------Actions ------------------------------------------------------------
         logoutBtn.addActionListener(e -> {
             currentUser = null; currentGroup = null;
             cardLayout.show(mainPanel, "Login");
@@ -390,7 +390,7 @@ public class ExpenseSplitterGUI extends JFrame {
     private void refreshDashboard() {
         dashboardWelcomeLabel.setText("Hello, " + currentUser.getName().split(" ")[0] + " 👋");
 
-        // ── Group cards ────────────────────────────────────────────────────
+        // ------------------------------------------------------------Group cards ------------------------------------------------------------
         dashboardGroupGrid.removeAll();
         List<Group> groups = groupManager.getGroupsForUser(currentUser);
 
@@ -409,7 +409,7 @@ public class ExpenseSplitterGUI extends JFrame {
             }
         }
 
-        // ── Overall summary ────────────────────────────────────────────────
+        // ------------------------------------------------------------Overall summary ------------------------------------------------------------
         dashboardSummaryPanel.removeAll();
 
         JLabel sumTitle = new JLabel("Overall Balance");
@@ -517,11 +517,13 @@ public class ExpenseSplitterGUI extends JFrame {
         JPanel headerRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         headerRight.setBackground(BG_ITEM);
 
-        JButton manageBtn  = createSmallBtn("⚙ Manage Group", TEXT_MUTED);
+        JButton renameGroupBtn = createSmallBtn("✎ Rename Group", TEXT_MUTED);
+        JButton addParticipantsBtn = createSmallBtn("+ Add Participants", TEXT_MUTED);
         JButton addExpBtn  = createSmallBtn("+ Add Expense",  ACCENT);
         JButton settleBtn  = createSmallBtn("✓ Settle Up",    SUCCESS);
 
-        headerRight.add(manageBtn);
+        headerRight.add(renameGroupBtn);
+        headerRight.add(addParticipantsBtn);
         headerRight.add(addExpBtn);
         headerRight.add(settleBtn);
 
@@ -558,7 +560,8 @@ public class ExpenseSplitterGUI extends JFrame {
         root.add(content, BorderLayout.CENTER);
 
         // ------------------------------------------------------------Actions ------------------------------------------------------------
-        manageBtn.addActionListener(e -> showManageGroupDialog());
+        renameGroupBtn.addActionListener(e -> showRenameGroupDialog());
+        addParticipantsBtn.addActionListener(e -> showAddParticipantsDialog());
         addExpBtn.addActionListener(e -> showAddExpenseDialog(null));
         settleBtn.addActionListener(e -> showSettlementDialog());
 
@@ -677,8 +680,22 @@ public class ExpenseSplitterGUI extends JFrame {
         JButton editBtn = createSmallBtn("✏", TEXT_MUTED);
         JButton delBtn  = createSmallBtn("🗑", ACCENT);
 
-        editBtn.addActionListener(e -> showAddExpenseDialog(exp));
+        editBtn.addActionListener(e -> {
+            if (!isCurrentUserOwner(exp)) {
+                JOptionPane.showMessageDialog(this,
+                        "Only the expense owner can edit this expense.",
+                        "Unauthorized", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            showAddExpenseDialog(exp);
+        });
         delBtn.addActionListener(e -> {
+            if (!isCurrentUserOwner(exp)) {
+                JOptionPane.showMessageDialog(this,
+                        "Only the expense owner can delete this expense.",
+                        "Unauthorized", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             int c = JOptionPane.showConfirmDialog(this,
                     "Delete expense \"" + exp.getDescription() + "\"?",
                     "Confirm Delete", JOptionPane.YES_NO_OPTION);
@@ -701,6 +718,13 @@ public class ExpenseSplitterGUI extends JFrame {
 
         addPanelHover(row, BG_CARD, BG_ITEM);
         return row;
+    }
+
+    private boolean isCurrentUserOwner(Expense expense) {
+        return expense != null
+                && expense.getPaidTo() != null
+                && currentUser != null
+                && expense.getPaidTo().equals(currentUser);
     }
 
     // ==========================================================================
@@ -861,6 +885,10 @@ public class ExpenseSplitterGUI extends JFrame {
 
                 // Edit  = delete old + create new
                 if (existing != null) {
+                    if (!isCurrentUserOwner(existing)) {
+                        formErr.setText("⚠  Only the expense owner can edit/delete this expense");
+                        return;
+                    }
                     currentGroup.getExpenses().remove(existing);
                     expenseManager.deleteExpense(existing);
                 }
@@ -948,8 +976,13 @@ public class ExpenseSplitterGUI extends JFrame {
                 table.getColumnModel().getColumn(i).setCellRenderer(altRenderer);
 
             // "Settle" button column
-            table.getColumnModel().getColumn(4).setCellRenderer(
-                    (t, val, sel, foc, row, col) -> createSmallBtn("Settle", SUCCESS));
+            table.getColumnModel().getColumn(4).setCellRenderer((t, val, sel, foc, row, col) -> {
+                DebtSimplifier.Settlement s = settlements.get(row);
+                boolean canSettle = s.payer != null && s.payer.equals(currentUser);
+                JButton btn = createSmallBtn(canSettle ? "Settle" : "Locked", canSettle ? SUCCESS : TEXT_MUTED);
+                btn.setEnabled(canSettle);
+                return btn;
+            });
 
             table.addMouseListener(new MouseAdapter() {
                 @Override public void mouseClicked(MouseEvent ev) {
@@ -957,6 +990,12 @@ public class ExpenseSplitterGUI extends JFrame {
                     int col = table.columnAtPoint(ev.getPoint());
                     if (col == 4 && row >= 0 && row < settlements.size()) {
                         DebtSimplifier.Settlement s = settlements.get(row);
+                        if (s.payer == null || !s.payer.equals(currentUser)) {
+                            JOptionPane.showMessageDialog(ExpenseSplitterGUI.this,
+                                    "You can only settle expenses that you owe.",
+                                    "Unauthorized", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
                         settleTransaction(s);
                         refreshGroupView();
                         dlg.dispose();
@@ -1139,23 +1178,22 @@ public class ExpenseSplitterGUI extends JFrame {
     }
 
     // ==========================================================================
-    //  DIALOG — MANAGE GROUP
+    //  DIALOG — RENAME GROUP
     // ==========================================================================
-    private void showManageGroupDialog() {
-        JDialog dlg = new JDialog(this, "Manage Group — " + currentGroup.getName(), true);
-        dlg.setSize(440, 460);
+    private void showRenameGroupDialog() {
+        JDialog dlg = new JDialog(this, "Rename Group — " + currentGroup.getName(), true);
+        dlg.setSize(440, 260);
         dlg.setLocationRelativeTo(this);
         dlg.getContentPane().setBackground(BG_DARK);
         dlg.setLayout(new BorderLayout());
 
-        dlg.add(styledDialogHeader("⚙  Manage Group", BG_ITEM), BorderLayout.NORTH);
+        dlg.add(styledDialogHeader("✎  Rename Group", BG_ITEM), BorderLayout.NORTH);
 
         JPanel body = new JPanel();
         body.setBackground(BG_DARK);
         body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
         body.setBorder(new EmptyBorder(20, 24, 20, 24));
 
-        // Rename
         JTextField renameField = mkField(false);
         JLabel      renameErr  = errorLabel();
         JButton     renameBtn  = createSmallBtn("Rename",  ACCENT2);
@@ -1164,12 +1202,49 @@ public class ExpenseSplitterGUI extends JFrame {
             if (n.isEmpty()) { renameErr.setText("⚠  Enter a name"); return; }
             currentGroup.setName(n);
             groupTitleLabel.setText(n);
-            dlg.setTitle("Manage Group — " + n);
+            dlg.setTitle("Rename Group — " + n);
             renameErr.setForeground(SUCCESS);
             renameErr.setText("✓  Renamed to \"" + n + "\"");
         });
 
-        // Members list
+        body.add(fieldGroup("Rename Group", renameField));
+        body.add(Box.createRigidArea(new Dimension(0, 6)));
+        body.add(leftWrap(renameBtn));
+        body.add(renameErr);
+
+        dlg.add(body, BorderLayout.CENTER);
+
+        JButton doneBtn = createSidebarBtn("Done");
+        doneBtn.addActionListener(e -> {
+            refreshGroupView();
+            dlg.dispose();
+        });
+        JPanel footer = new JPanel();
+        footer.setBackground(BG_DARK);
+        footer.setBorder(new EmptyBorder(8, 24, 14, 24));
+        footer.add(doneBtn);
+        dlg.add(footer, BorderLayout.SOUTH);
+
+        dlg.setVisible(true);
+    }
+
+    // ==========================================================================
+    //  DIALOG — ADD PARTICIPANTS
+    // ==========================================================================
+    private void showAddParticipantsDialog() {
+        JDialog dlg = new JDialog(this, "Add Participants — " + currentGroup.getName(), true);
+        dlg.setSize(440, 460);
+        dlg.setLocationRelativeTo(this);
+        dlg.getContentPane().setBackground(BG_DARK);
+        dlg.setLayout(new BorderLayout());
+
+        dlg.add(styledDialogHeader("+  Add Participants", BG_ITEM), BorderLayout.NORTH);
+
+        JPanel body = new JPanel();
+        body.setBackground(BG_DARK);
+        body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
+        body.setBorder(new EmptyBorder(20, 24, 20, 24));
+
         JLabel membersLbl = new JLabel("Current Members");
         membersLbl.setFont(FONT_H2);
         membersLbl.setForeground(TEXT_PRI);
@@ -1192,7 +1267,6 @@ public class ExpenseSplitterGUI extends JFrame {
             membersList.add(Box.createRigidArea(new Dimension(0, 4)));
         }
 
-        // Add member
         JTextField addEmailField = mkField(false);
         JLabel     addErr        = errorLabel();
         JButton    addBtn        = createSmallBtn("+ Add Member", SUCCESS);
@@ -1200,17 +1274,16 @@ public class ExpenseSplitterGUI extends JFrame {
             String email = addEmailField.getText().trim();
             User u = userManager.findByEmail(email);
             if (u == null) { addErr.setText("⚠  User not found"); return; }
+            if (currentGroup.getMembers().contains(u)) { addErr.setText("⚠  User already in group"); return; }
             groupManager.addMember(currentGroup.getId(), u);
             addErr.setForeground(SUCCESS);
             addErr.setText("✓  Added " + u.getName());
             addEmailField.setText("");
+            refreshGroupView();
+            dlg.dispose();
+            showAddParticipantsDialog();
         });
 
-        body.add(fieldGroup("Rename Group", renameField));
-        body.add(Box.createRigidArea(new Dimension(0, 6)));
-        body.add(leftWrap(renameBtn));
-        body.add(renameErr);
-        body.add(Box.createRigidArea(new Dimension(0, 20)));
         body.add(membersLbl);
         body.add(Box.createRigidArea(new Dimension(0, 8)));
         body.add(membersList);

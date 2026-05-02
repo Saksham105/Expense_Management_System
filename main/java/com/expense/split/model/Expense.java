@@ -8,7 +8,7 @@ public class Expense {
     private final long id;
     private String description;
     private double totalAmount;
-    private User paidTo; // whom participants have to pay
+    private User paidTo; // owner/creator of this expense (participants pay this user)
     private List<SplitDetail> paidBy; // participants list
     private SplitType type;
     private final LocalDateTime createdAt; // no update
