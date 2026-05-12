@@ -1,13 +1,19 @@
 package com.expense.split.gui;
 
+import com.expense.split.exception.InvalidSplitException;
+import com.expense.split.exception.InvalidUserException;
 import com.expense.split.manager.ExpenseManager;
 import com.expense.split.manager.GroupManager;
 import com.expense.split.manager.UserManager;
 import com.expense.split.model.*;
+import com.expense.split.repository.ExpenseRepository;
+import com.expense.split.repository.GroupRepository;
+import com.expense.split.repository.UserRepository;
 import com.expense.split.service.DashboardService;
 import com.expense.split.service.DebtSimplifier;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
@@ -98,6 +104,28 @@ public class ExpenseSplitterGUI extends JFrame {
 
         add(mainPanel);
         cardLayout.show(mainPanel, "Login");
+
+        // window listener
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    System.out.println("Saving data before closing...");
+
+                    UserRepository.upload();
+                    GroupRepository.upload();
+                    ExpenseRepository.upload();
+
+                    System.out.println(com.expense.split.design.Color.BLUE + "TERMINATING APPLICATION..." + com.expense.split.design.Color.RESET);
+                } catch (SQLException | InvalidSplitException | InvalidUserException exception) {
+                    exception.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "Error saving data!"
+                    );
+                }
+            }
+        });
     }
 
     // ==========================================================================
@@ -1044,7 +1072,9 @@ public class ExpenseSplitterGUI extends JFrame {
 
             for (SplitDetail detail : exp.getPaidBy()) {
                 if (remaining <= 0.001) break;
-                if (detail.getUser().equals(s.payer) && !detail.getStatus()) {
+                if (detail.getUser().equals(s.payer)
+                        && !detail.getStatus()
+                        && remaining + 0.001 >= detail.getAmount()) {
                     detail.setStatus(true);
                     remaining -= detail.getAmount();
                 }
@@ -1052,8 +1082,18 @@ public class ExpenseSplitterGUI extends JFrame {
         }
 
         // Mirror in the payer's personal split history
+        double historyRemaining = s.amount;
         for (SplitDetail sd : s.payer.getSplitHistory()) {
-            if (!sd.getStatus()) sd.setStatus(true);
+            if (historyRemaining <= 0.001) {
+                break;
+            }
+
+            if (sd.getUser().equals(s.payee)
+                    && !sd.getStatus()
+                    && historyRemaining + 0.001 >= sd.getAmount()) {
+                sd.setStatus(true);
+                historyRemaining -= sd.getAmount();
+            }
         }
     }
 

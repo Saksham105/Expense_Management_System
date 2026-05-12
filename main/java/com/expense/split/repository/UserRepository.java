@@ -1,7 +1,12 @@
 package com.expense.split.repository;
 
+import com.expense.split.db.DbConnection;
 import com.expense.split.exception.*;
 import com.expense.split.model.User;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -9,11 +14,78 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class UserRepository {
     private static final List<User> userList = new CopyOnWriteArrayList<>();
 
-    public UserRepository() {
-        userList.add(new User("saksham", "saksham@gmail.com", "pass1234"));
-        userList.add(new User("kirti", "k@gmail.com", "k1234"));
-        userList.add(new User("rupesh", "r@gmail.com", "r1234"));
-        userList.add(new User("amruta", "a@gmail.com", "a1234"));
+    // public UserRepository() {
+    //     userList.add(new User("saksham", "saksham@gmail.com", "pass1234"));
+    //     userList.add(new User("kirti", "k@gmail.com", "k1234"));
+    //     userList.add(new User("rupesh", "r@gmail.com", "r1234"));
+    //     userList.add(new User("amruta", "a@gmail.com", "a1234"));
+    // }
+
+    // save list (users) in the database.
+    public static void upload() throws SQLException, InvalidUserException {
+        if (userList.isEmpty()) {
+            throw new InvalidUserException("user list is empty. nothing to upload.");
+        }
+
+        String query = """
+                INSERT INTO users (user_id, name, email, password)
+                VALUES (?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    name = VALUES(name),
+                    email = VALUES(email),
+                    password = VALUES(password)
+                """;
+
+        try (
+            Connection connection = DbConnection.getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)
+        ) {
+            for (User user : userList) {
+                ps.setLong(1, user.getId());
+                ps.setString(2, user.getName());
+                ps.setString(3, user.getEmail());
+                ps.setString(4, user.getPassword());
+
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+
+            System.out.println("all users uploaded successfully.");
+        }
+    }
+
+    // get all entries from database and form a list of users
+    public static void download() throws SQLException {
+        userList.clear();
+        String query = """
+                SELECT user_id, name, email, password
+                FROM users
+                """;
+        long maxId = 0;
+
+        try (
+                Connection connection = DbConnection.getConnection();
+                PreparedStatement ps = connection.prepareStatement(query);
+                ResultSet rs = ps.executeQuery()
+        ) {
+            while (rs.next()) {
+                long id = rs.getLong("user_id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String password = rs.getString("password");
+
+                User user = new User(id, name, email, password);
+                userList.add(user);
+
+                if (id > maxId) {
+                    maxId = id;
+                }
+            }
+        }
+        User.setUserCount(maxId);
+
+        System.out.println("all users downloaded successfully.");
     }
 
     // Getter

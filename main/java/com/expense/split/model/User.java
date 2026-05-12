@@ -21,10 +21,20 @@ public class User {
         this.splitHistory = new ArrayList<>();
     }
 
+    // constructor for creating User from database.
+    public User(long id, String name, String email, String password) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.splitHistory = new ArrayList<>();
+    }
+
     // Setters
     public void setName(String name) { this.name = name; }
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
+    public static void setUserCount(long count) {userCount = count;}
 
     // Getters
     public long getId() { return id; }
@@ -37,7 +47,7 @@ public class User {
     // overriding Object class methods
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, password);
+        return Objects.hash(id);
     }
 
     @Override

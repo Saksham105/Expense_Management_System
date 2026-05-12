@@ -20,6 +20,14 @@ public class Group {
         this.expenses = new ArrayList<>();
     }
 
+    // constructor for creating Group from database.
+    public Group(long id, String name) {
+        this.id = id;
+        this.name = name;
+        this.members = new ArrayList<>();
+        this.expenses = new ArrayList<>();
+    }
+
     // Setters
     public void setName(String name) {
         this.name = name;
@@ -49,7 +57,17 @@ public class Group {
     }
 
     public void addExpense(Expense expense) {
-        expenses.add(expense);
+        if (!expenses.contains(expense)) {
+            expenses.add(expense);
+        }
+    }
+
+    public static void setGroupCount(long count) {
+        groupCount = count;
+    }
+
+    public static long getGroupCount() {
+        return groupCount;
     }
 
     // overriding Object class methods

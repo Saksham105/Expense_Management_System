@@ -37,12 +37,38 @@ public class Expense {
         this.groupId = groupId;
     }
 
+    // constructor for creating Expense from database.
+    public Expense(
+        long id,
+        User paidTo,
+        double totalAmount,
+        SplitType type,
+        List<SplitDetail> paidBy,
+        String description,
+        long groupId,
+        LocalDateTime createdAt
+    ) {
+        this.id = id;
+        this.paidTo = paidTo;
+        this.totalAmount = totalAmount;
+        this.type = type;
+        this.paidBy = paidBy;
+        this.description = description;
+        this.groupId = groupId;
+        this.createdAt = createdAt;
+    }
+
     // Setters
     public void setPaidTo(User paidTo) { this.paidTo = paidTo; }
     public void setPaidBy(List<SplitDetail> paidBy) { this.paidBy = paidBy; }
     public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
     public void setType(SplitType type) { this.type = type; }
     public void setDescription(String description) { this.description = description; }
+    public void setGroupId(long groupId) { this.groupId = groupId; }
+    public void setCurrency(String currency) { this.currency = currency; }
+    public void setConversionRate(double rate) { this.conversionRate = rate; }
+    public void setRecurring(boolean recurring) { isRecurring = recurring; }
+    public static void setExpenseCount(long count) {expenseCount = count;}
 
     // Getters
     public long getId() { return id; }
@@ -56,11 +82,7 @@ public class Expense {
     public String getCurrency() { return currency; }
     public double getConversionRate() { return conversionRate; }
     public boolean isRecurring() { return isRecurring; }
-
-    public void setGroupId(long groupId) { this.groupId = groupId; }
-    public void setCurrency(String currency) { this.currency = currency; }
-    public void setConversionRate(double rate) { this.conversionRate = rate; }
-    public void setRecurring(boolean recurring) { isRecurring = recurring; }
+    public static long getExpenseCount() {return expenseCount;}
 
     // overriding Object class methods
     @Override
