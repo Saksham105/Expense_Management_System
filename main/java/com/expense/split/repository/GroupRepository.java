@@ -62,7 +62,7 @@ public class GroupRepository {
             groupPS.executeBatch();
             memberPS.executeBatch();
 
-            System.out.println("all groups uploaded successfully.");
+            System.out.println("[STATUS]: all groups uploaded successfully.");
 
         }
     }
@@ -124,7 +124,7 @@ public class GroupRepository {
 
         Group.setGroupCount(maxId);
 
-        System.out.println("all groups downloaded successfully.");
+        System.out.println("[STATUS]: all groups downloaded successfully.");
     }
 
     public Group save(Group group) {

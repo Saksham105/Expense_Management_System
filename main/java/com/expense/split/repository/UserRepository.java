@@ -51,7 +51,7 @@ public class UserRepository {
 
             ps.executeBatch();
 
-            System.out.println("all users uploaded successfully.");
+            System.out.println("[STATUS]: all users uploaded successfully.");
         }
     }
 
@@ -85,7 +85,7 @@ public class UserRepository {
         }
         User.setUserCount(maxId);
 
-        System.out.println("all users downloaded successfully.");
+        System.out.println("[STATUS]: all users downloaded successfully.");
     }
 
     // Getter

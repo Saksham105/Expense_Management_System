@@ -110,13 +110,13 @@ public class ExpenseSplitterGUI extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    System.out.println("Saving data before closing...");
+                    System.out.println("[PROCESS]: Saving data before closing...");
 
                     UserRepository.upload();
                     GroupRepository.upload();
                     ExpenseRepository.upload();
 
-                    System.out.println(com.expense.split.design.Color.BLUE + "TERMINATING APPLICATION..." + com.expense.split.design.Color.RESET);
+                    System.out.println(com.expense.split.design.Color.BRIGHT_BLUE + "TERMINATING APPLICATION..." + com.expense.split.design.Color.RESET);
                 } catch (SQLException | InvalidSplitException | InvalidUserException exception) {
                     exception.printStackTrace();
                     JOptionPane.showMessageDialog(

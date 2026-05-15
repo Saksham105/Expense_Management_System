@@ -99,7 +99,7 @@ public class ExpenseRepository {
             expensePS.executeBatch();
             splitPS.executeBatch();
 
-            System.out.println("all expenses uploaded successfully.");
+            System.out.println("[STATUS]: all expenses uploaded successfully.");
         }
     }
 
@@ -201,7 +201,7 @@ public class ExpenseRepository {
 
         Expense.setExpenseCount(maxId);
 
-        System.out.println("all expenses downloaded successfully.");
+        System.out.println("[STATUS]: all expenses downloaded successfully.");
     }
 
     // Getter
