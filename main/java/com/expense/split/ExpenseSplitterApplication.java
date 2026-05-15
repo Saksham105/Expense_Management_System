@@ -14,7 +14,10 @@ public class ExpenseSplitterApplication {
             GroupRepository.download();
             ExpenseRepository.download();
             
+            // launch the GUI (java swing JFrame)
             ExpenseSplitterGUI.launch();
+
+            System.out.println(Color.YELLOW + "MAIN THREAD ENDS HERE..." + Color.RESET);
             
         } catch (Exception e) {
             e.printStackTrace();
