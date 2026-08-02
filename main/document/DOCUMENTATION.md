@@ -1,5 +1,8 @@
 # Expense Management System
 
+## Run Guide
+C:\Users\Saksham\OneDrive\Desktop\Git\__ALL_PROJECTS_\Expense_Management_System>java -cp main\java\lib\mysql-connector-j-9.6.0.jar main\java\com\expense\split\ExpenseSplitterApplication.java
+
 ## Overview
 Expense Splitter System is a Java desktop application that helps users manage shared expenses inside groups. It allows users to register, log in, create groups, add participants, create split-based expenses, and settle dues between members.
 

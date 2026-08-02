@@ -1,5 +1,8 @@
 # Expense Management System
 
+## Run Guide
+C:\Users\Saksham\OneDrive\Desktop\Git\__ALL_PROJECTS_\Expense_Management_System>java -cp main\java\lib\mysql-connector-j-9.6.0.jar main\java\com\expense\split\ExpenseSplitterApplication.java
+
 ## Problem Statement
     Design and implement a split-wise like expense sharing system, that allows you to:
         - Add expense
