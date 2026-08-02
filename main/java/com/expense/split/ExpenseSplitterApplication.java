@@ -10,7 +10,7 @@ public class ExpenseSplitterApplication {
     public static void main(String[] args) {
         try {
             System.out.println(Color.BRIGHT_BLUE + "STARTING APPLICATION..." + Color.RESET);
-            System.out.println("[PROCESS]: Saving data before closing...");
+            System.out.println("[PROCESS]: Loading data before GUI initialize...");
             UserRepository.download();
             GroupRepository.download();
             ExpenseRepository.download();
